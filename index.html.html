@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clasificación GTD / GT3</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #0b0e14;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 30px;
+      padding: 30px 15px;
+      min-height: 100vh;
+    }
+
+    /* CONTENEDOR PRINCIPAL DEL CARTEL */
+    #poster {
+      width: 540px;
+      background-color: #050811;
+      background-image: radial-gradient(circle at 50% 15%, rgba(13, 30, 56, 0.85) 0%, rgba(5, 8, 17, 0.92) 50%, rgba(2, 3, 6, 0.97) 100%);
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      padding: 24px 16px 30px 16px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 0 1px #1e293b;
+      border-radius: 4px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* CAPA DE OSCURECIMIENTO Y LÍNEAS DE VELOCIDAD */
+    #poster::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, rgba(2,6,15,0.7) 0%, rgba(2,3,6,0.85) 100%),
+                  repeating-linear-gradient(
+                    -35deg,
+                    rgba(0, 210, 255, 0.03) 0px,
+                    rgba(0, 210, 255, 0.03) 2px,
+                    transparent 2px,
+                    transparent 8px
+                  );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* CONTENIDO POR ENCIMA DEL FONDO */
+    .header, .table-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ENCABEZADO */
+    .header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+    .header-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #00d2ff;
+      letter-spacing: 2.5px;
+      text-shadow: 0 0 10px rgba(0,210,255,0.7), 0 0 25px rgba(0,210,255,0.4);
+      margin-bottom: 6px;
+    }
+    .header-logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+      margin: 8px 0;
+    }
+    .gtd-badge {
+      font-size: 42px;
+      font-style: italic;
+      font-weight: 900;
+      background: linear-gradient(180deg, #ffffff 10%, #38bdf8 50%, #0369a1 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(2px 3px 0px #082f49);
+      letter-spacing: -2px;
+    }
+    .gt3-badge {
+      font-size: 42px;
+      font-style: italic;
+      font-weight: 900;
+      background: linear-gradient(180deg, #ffffff 10%, #f87171 50%, #b91c1c 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(2px 3px 0px #450a0a);
+      position: relative;
+      letter-spacing: -2px;
+    }
+    .gt3-badge span {
+      position: absolute;
+      bottom: -6px;
+      right: 0;
+      font-size: 11px;
+      color: #eab308;
+      -webkit-text-fill-color: #eab308;
+      letter-spacing: 2px;
+      font-style: normal;
+    }
+    .dots-divider {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 10px;
+    }
+    .dots-divider span {
+      width: 4.5px;
+      height: 4.5px;
+      background: #00d2ff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #00d2ff;
+    }
+
+    /* FILAS DE CLASIFICACIÓN */
+    .table-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5.5px;
+    }
+    .team-row {
+      display: flex;
+      align-items: center;
+      height: 40px;
+      position: relative;
+    }
+    .pos-num {
+      width: 44px;
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffffff;
+      text-align: center;
+      font-style: italic;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.9));
+      flex-shrink: 0;
+    }
+    .bar-wrapper {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    /* BISEL BLANCO CON ESCUDO */
+    .badge-box {
+      width: 95px;
+      height: 100%;
+      background: #ffffff;
+      transform: skewX(-22deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 3;
+      overflow: hidden;
+      box-shadow: -2px 0 6px rgba(0,0,0,0.4);
+      border-right: 2px solid #000;
+    }
+    .badge-box img {
+      transform: skewX(22deg);
+      max-height: 32px;
+      max-width: 72px;
+      object-fit: contain;
+    }
+    .badge-box .badge-fallback {
+      transform: skewX(22deg);
+      font-size: 11px;
+      font-weight: 900;
+      color: #0f172a;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    /* CUERPO DE COLOR CON SIGLAS */
+    .color-box {
+      flex: 1;
+      height: 100%;
+      margin-left: -13px;
+      transform: skewX(-22deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -2px 3px rgba(0,0,0,0.5);
+    }
+    .team-code {
+      transform: skewX(22deg);
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 20px;
+      letter-spacing: 2px;
+      text-shadow: 1px 2px 4px rgba(0,0,0,0.8);
+    }
+
+    /* CÁPSULA NEGRA CON PUNTOS */
+    .points-box {
+      width: 100px;
+      height: 100%;
+      background: #000000;
+      margin-left: -13px;
+      transform: skewX(-22deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      border-left: 2px solid #111;
+      box-shadow: inset 0 2px 3px rgba(255,255,255,0.1);
+    }
+    .points-val {
+      transform: skewX(22deg);
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 21px;
+      font-style: italic;
+      letter-spacing: 0.5px;
+    }
+
+    /* PANEL LATERAL DE GESTIÓN */
+    .control-panel {
+      width: 420px;
+      background: #151922;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #2d3748;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+    .control-panel h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #00d2ff;
+      border-bottom: 1px solid #2d3748;
+      padding-bottom: 8px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      font-weight: 900;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+    .btn-sort { background: #0284c7; color: white; }
+    .btn-sort:hover { background: #0369a1; }
+    .btn-export { background: #16a34a; color: white; }
+    .btn-export:hover { background: #15803d; }
+    
+    .bg-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .btn-bg {
+      flex: 1;
+      background: #475569;
+      color: white;
+      padding: 10px;
+      font-size: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 800;
+      text-align: center;
+    }
+    .btn-bg:hover { background: #64748b; }
+    .btn-bg-reset {
+      background: #334155;
+      color: #cbd5e1;
+      padding: 10px 14px;
+      font-size: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .btn-bg-reset:hover { background: #1e293b; }
+
+    .team-edit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      background: #0f121a;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+    }
+    .team-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 110px;
+    }
+    .team-color-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    .team-info span {
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .team-edit-row input[type="number"] {
+      width: 75px;
+      background: #06080d;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 6px;
+      border-radius: 4px;
+      font-weight: 800;
+      text-align: center;
+      font-size: 14px;
+    }
+    .file-btn {
+      background: #334155;
+      color: #e2e8f0;
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 700;
+      display: inline-block;
+      text-align: center;
+    }
+    .file-btn:hover { background: #475569; }
+    .file-input { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- CARTEL DE LA CLASIFICACIÓN -->
+  <div id="poster">
+    <div class="header">
+      <div class="header-title">CLASIFICACIÓN GENERAL</div>
+      <div class="header-logos">
+        <div class="gtd-badge">GTD</div>
+        <div class="gt3-badge">GT3<span>2025</span></div>
+      </div>
+      <div class="dots-divider">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <!-- LISTA DE FILAS -->
+    <div class="table-container" id="teamsList"></div>
+  </div>
+
+  <!-- PANEL DE CONTROL LATERAL -->
+  <div class="control-panel">
+    <h2>Gestión de Clasificación</h2>
+    <button class="btn btn-sort" onclick="sortAndRender()">⚡ 1. Reordenar por Puntos</button>
+    <button class="btn btn-export" onclick="downloadImage()">💾 2. Descargar Imagen PNG</button>
+    
+    <!-- CONTROL DE IMAGEN DE FONDO -->
+    <div style="margin: 15px 0;">
+      <h3 style="font-size: 13px; margin-bottom: 8px; color: #94a3b8; text-transform: uppercase;">Fondo del Cartel:</h3>
+      <div class="bg-controls">
+        <label class="btn-bg">
+          🖼️ Subir Foto de Fondo
+          <input type="file" class="file-input" accept="image/*" onchange="uploadBackground(this)">
+        </label>
+        <button class="btn-bg-reset" onclick="resetBackground()" title="Volver al fondo por defecto">Restaurar</button>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size: 13px; margin-bottom: 10px; color: #94a3b8; text-transform: uppercase;">Equipos, Puntos y Escudos:</h3>
+      <div id="editorInputs"></div>
+    </div>
+  </div>
+
+  <script>
+    let teamsData = [
+      { id: "mr", name: "MR", label: "MANIACS", color: "#1e1e1e", pts: 230, logo: "" },
+      { id: "tls", name: "TLS", label: "THUNDER", color: "#0d2b59", pts: 228, logo: "" },
+      { id: "ava", name: "AVA", label: "AVALON", color: "#e65100", pts: 199, logo: "" },
+      { id: "wrt", name: "WRT", label: "WRT", color: "#005a70", pts: 183, logo: "" },
+      { id: "tsr", name: "TSR", label: "TOP SECRET", color: "#19538c", pts: 183, logo: "" },
+      { id: "krt", name: "KRT", label: "KRONOS", color: "#007a33", pts: 176, logo: "" },
+      { id: "fvrt", name: "FVRT", label: "FANATIC", color: "#6b008b", pts: 175, logo: "" },
+      { id: "dkr", name: "DKR", label: "DARK KNIGHT", color: "#003b75", pts: 166, logo: "" },
+      { id: "wms", name: "WMS", label: "W MOTORSPORT", color: "#c62828", pts: 166, logo: "" },
+      { id: "kaishin", name: "KAISHIN", label: "KAISHIN", color: "#c2185b", pts: 158, logo: "" },
+      { id: "shk", name: "SHK", label: "SHK", color: "#9e7d0a", pts: 157, logo: "" },
+      { id: "rln", name: "RLN", label: "REDLINE", color: "#0097a7", pts: 155, logo: "" },
+      { id: "gr8", name: "GR8", label: "GR8", color: "#b25828", pts: 68, logo: "" },
+      { id: "mmt", name: "MMT", label: "MONARCHY", color: "#0b2052", pts: 38, logo: "" }
+    ];
+
+    // Cargar logos guardados
+    const savedLogos = localStorage.getItem('gt_team_logos');
+    if (savedLogos) {
+      try {
+        const parsed = JSON.parse(savedLogos);
+        teamsData.forEach(t => { if (parsed[t.id]) t.logo = parsed[t.id]; });
+      } catch(e) {}
+    }
+
+    // Cargar fondo guardado
+    const savedBg = localStorage.getItem('gt_custom_bg');
+    if (savedBg) {
+      document.getElementById('poster').style.backgroundImage = `url('${savedBg}')`;
+    }
+
+    function renderTable() {
+      const list = document.getElementById("teamsList");
+      list.innerHTML = "";
+
+      teamsData.forEach((team, index) => {
+        const row = document.createElement("div");
+        row.className = "team-row";
+        
+        const badgeContent = team.logo 
+          ? `<img src="${team.logo}" alt="${team.name}">` 
+          : `<span class="badge-fallback">${team.label}</span>`;
+
+        row.innerHTML = `
+          <div class="pos-num">${index + 1}</div>
+          <div class="bar-wrapper">
+            <div class="badge-box">
+              ${badgeContent}
+            </div>
+            <div class="color-box" style="background: ${team.color};">
+              <span class="team-code">${team.name}</span>
+            </div>
+            <div class="points-box">
+              <span class="points-val">${team.pts}</span>
+            </div>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function renderEditor() {
+      const editor = document.getElementById("editorInputs");
+      editor.innerHTML = "";
+
+      teamsData.forEach((team) => {
+        const row = document.createElement("div");
+        row.className = "team-edit-row";
+        row.innerHTML = `
+          <div class="team-info">
+            <div class="team-color-indicator" style="background:${team.color}"></div>
+            <span>${team.name}</span>
+          </div>
+          <input type="number" value="${team.pts}" onchange="updatePoints('${team.id}', this.value)">
+          <label class="file-btn">
+            ${team.logo ? '✓ Escudo' : 'Subir logo'}
+            <input type="file" class="file-input" accept="image/*" onchange="uploadLogo('${team.id}', this)">
+          </label>
+        `;
+        editor.appendChild(row);
+      });
+    }
+
+    function updatePoints(id, value) {
+      const team = teamsData.find(t => t.id === id);
+      if (team) {
+        team.pts = parseInt(value) || 0;
+        renderTable();
+      }
+    }
+
+    function uploadLogo(id, input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const team = teamsData.find(t => t.id === id);
+          if (team) {
+            team.logo = e.target.result;
+            const logosMap = {};
+            teamsData.forEach(t => { if(t.logo) logosMap[t.id] = t.logo; });
+            localStorage.setItem('gt_team_logos', JSON.stringify(logosMap));
+
+            renderTable();
+            renderEditor();
+          }
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function uploadBackground(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const bgData = e.target.result;
+          document.getElementById('poster').style.backgroundImage = `url('${bgData}')`;
+          localStorage.setItem('gt_custom_bg', bgData);
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function resetBackground() {
+      document.getElementById('poster').style.backgroundImage = "radial-gradient(circle at 50% 15%, rgba(13, 30, 56, 0.85) 0%, rgba(5, 8, 17, 0.92) 50%, rgba(2, 3, 6, 0.97) 100%)";
+      localStorage.removeItem('gt_custom_bg');
+    }
+
+    function sortAndRender() {
+      teamsData.sort((a, b) => b.pts - a.pts);
+      renderTable();
+      renderEditor();
+    }
+
+    function downloadImage() {
+      const poster = document.getElementById("poster");
+      html2canvas(poster, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null
+      }).then(canvas => {
+        const link = document.createElement("a");
+        link.download = `Clasificacion_GT_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+
+    // Inicializar
+    renderTable();
+    renderEditor();
+  </script>
+</body>
+</html>
