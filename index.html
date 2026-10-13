@@ -1,668 +1,1546 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
   <title>Clasificación GTD / GT3</title>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap');
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-light: #00b7ff;
+      --blue-main: #0076df;
+      --blue-dark: #003d91;
+      --red-light: #ff4668;
+      --red-main: #dd0038;
+      --red-dark: #8b001f;
+      --silver-1: #ffffff;
+      --silver-2: #edf8ff;
+      --silver-3: #a9d2f3;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      background-color: #0b0e14;
-      color: #fff;
-      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      padding: 30px 15px;
+      background: #02050d;
+      color: #ffffff;
+      font-family: "Montserrat", sans-serif;
       display: flex;
       flex-direction: row;
       justify-content: center;
       align-items: flex-start;
       gap: 30px;
-      padding: 30px 15px;
-      min-height: 100vh;
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* PESTAÑAS PARA MÓVIL (Ocultas en PC) */
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    /* =========================
+       PESTAÑAS PARA MÓVIL
+    ========================= */
     .mobile-nav {
       display: none;
       width: 100%;
       max-width: 540px;
-      margin-bottom: 15px;
-      background: #151922;
-      border-radius: 8px;
       padding: 4px;
-      border: 1px solid #2d3748;
+      border: 1px solid #075fff;
+      border-radius: 8px;
+      background: #071321;
+      box-shadow: 0 0 12px rgba(0, 132, 255, 0.2);
     }
+
     .mobile-tab-btn {
       flex: 1;
       padding: 10px;
-      font-size: 13px;
-      font-weight: 900;
       border: none;
       border-radius: 6px;
       background: transparent;
-      color: #94a3b8;
+      color: #8eb8da;
       cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
       text-transform: uppercase;
-      transition: all 0.2s;
-    }
-    .mobile-tab-btn.active {
-      background: #0284c7;
-      color: #fff;
+      transition: 0.2s ease;
     }
 
-    /* CONTENEDOR PRINCIPAL DEL CARTEL */
+    .mobile-tab-btn.active {
+      background: linear-gradient(135deg, #0076df, #00aaff);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 170, 255, 0.45);
+    }
+
+    /* =========================
+       CARTEL
+    ========================= */
     #poster {
       width: 540px;
       max-width: 100%;
-      background-color: #050811;
-      background-image: radial-gradient(circle at 50% 15%, rgba(13, 30, 56, 0.85) 0%, rgba(5, 8, 17, 0.92) 50%, rgba(2, 3, 6, 0.97) 100%);
-      background-size: cover;
-      background-position: center;
+      min-height: 700px;
       position: relative;
-      padding: 24px 16px 30px 16px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 0 1px #1e293b;
-      border-radius: 4px;
       overflow: hidden;
       flex-shrink: 0;
+      padding: 22px 12px 28px;
+      border: 1px solid #075fff;
+      border-radius: 4px;
+      background-color: #030914;
+      background-image:
+        radial-gradient(
+          circle at 50% 8%,
+          rgba(0, 120, 255, 0.34) 0%,
+          rgba(3, 12, 29, 0.90) 41%,
+          rgba(1, 3, 9, 0.98) 100%
+        );
+      background-size: cover;
+      background-position: center;
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.9),
+        0 0 0 1px #075fff,
+        0 0 22px rgba(0, 132, 255, 0.28);
     }
 
-    /* CAPA DE OSCURECIMIENTO Y LÍNEAS DE VELOCIDAD */
     #poster::before {
       content: "";
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(180deg, rgba(2,6,15,0.7) 0%, rgba(2,3,6,0.85) 100%),
-                  repeating-linear-gradient(
-                    -35deg,
-                    rgba(0, 210, 255, 0.03) 0px,
-                    rgba(0, 210, 255, 0.03) 2px,
-                    transparent 2px,
-                    transparent 8px
-                  );
-      pointer-events: none;
+      inset: 0;
       z-index: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(0, 10, 30, 0.35) 0%,
+          rgba(0, 2, 8, 0.86) 100%
+        ),
+        repeating-linear-gradient(
+          -35deg,
+          rgba(0, 157, 255, 0.055) 0px,
+          rgba(0, 157, 255, 0.055) 2px,
+          transparent 2px,
+          transparent 9px
+        );
     }
 
-    /* CONTENIDO POR ENCIMA DEL FONDO */
-    .header, .table-container {
+    .header,
+    .classification-table {
       position: relative;
       z-index: 1;
     }
 
-    /* ENCABEZADO */
+    /* =========================
+       CABECERA
+    ========================= */
     .header {
+      margin-bottom: 16px;
       text-align: center;
-      margin-bottom: 22px;
     }
+
     .header-title {
-      font-size: 26px;
+      margin-bottom: 4px;
+      color: #eaf8ff;
+      font-size: 25px;
       font-weight: 900;
-      color: #00d2ff;
-      letter-spacing: 2.5px;
-      text-shadow: 0 0 10px rgba(0,210,255,0.7), 0 0 25px rgba(0,210,255,0.4);
-      margin-bottom: 6px;
+      letter-spacing: 2px;
+      text-shadow:
+        0 0 4px #ffffff,
+        0 0 10px #008cff,
+        0 0 24px rgba(0, 140, 255, 0.9);
     }
+
     .header-logos {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 30px;
-      margin: 10px 0 14px 0;
-      overflow: visible;
+      gap: 25px;
+      margin: 6px 0 12px;
     }
-    .gtd-badge {
-      font-size: 44px;
-      line-height: 1.15;
-      font-style: italic;
-      font-weight: 900;
-      padding: 4px 12px;
-      background: linear-gradient(180deg, #ffffff 10%, #38bdf8 50%, #0369a1 90%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(2px 3px 0px #082f49);
-      letter-spacing: -1px;
-      display: inline-block;
-    }
+
+    .gtd-badge,
     .gt3-badge {
-      font-size: 44px;
-      line-height: 1.15;
+      display: inline-block;
+      font-size: 42px;
+      line-height: 1.1;
       font-style: italic;
       font-weight: 900;
-      padding: 4px 18px 4px 10px;
-      background: linear-gradient(180deg, #ffffff 10%, #f87171 50%, #b91c1c 90%);
+      letter-spacing: -1px;
+      background: linear-gradient(
+        180deg,
+        #ffffff 8%,
+        #d9f6ff 28%,
+        #00b7ff 55%,
+        #0066dc 88%
+      );
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(2px 3px 0px #450a0a);
-      position: relative;
-      letter-spacing: -1px;
-      display: inline-block;
+      filter:
+        drop-shadow(2px 3px 0 #001d61)
+        drop-shadow(0 0 8px rgba(0, 143, 255, 0.8));
     }
+
+    .gtd-badge {
+      padding: 4px 10px;
+    }
+
+    .gt3-badge {
+      position: relative;
+      padding: 4px 18px 4px 10px;
+    }
+
     .gt3-badge span {
       position: absolute;
-      bottom: -4px;
       right: 2px;
-      font-size: 12px;
-      color: #facc15;
-      -webkit-text-fill-color: #facc15;
-      letter-spacing: 2px;
+      bottom: -5px;
+      color: #ff174a;
+      font-size: 11px;
       font-style: normal;
       font-weight: 900;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
-    }
-    .dots-divider {
-      display: flex;
-      justify-content: center;
-      gap: 7px;
-      margin-top: 12px;
-    }
-    .dots-divider span {
-      width: 4.5px;
-      height: 4.5px;
-      background: #00d2ff;
-      border-radius: 50%;
-      box-shadow: 0 0 6px #00d2ff;
+      letter-spacing: 2px;
+      -webkit-text-fill-color: #ff174a;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
     }
 
-    /* FILAS DE CLASIFICACIÓN */
-    .table-container {
+    .race-line {
+      width: 100%;
+      height: 5px;
+      margin: 0 auto;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 6%,
+        #e00035 6%,
+        #e00035 42%,
+        #014ca9 42%,
+        #014ca9 48%,
+        #e00035 48%,
+        #e00035 88%,
+        transparent 88%,
+        transparent 100%
+      );
+      filter: drop-shadow(0 0 4px rgba(0, 153, 255, 0.65));
+    }
+
+    /* =========================
+       TABLA
+    ========================= */
+    .classification-table {
       display: flex;
       flex-direction: column;
-      gap: 5.5px;
-    }
-    .team-row {
-      display: flex;
-      align-items: center;
-      height: 40px;
-      position: relative;
-    }
-    .pos-num {
-      width: 44px;
-      font-size: 24px;
-      font-weight: 900;
-      color: #ffffff;
-      text-align: center;
-      font-style: italic;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.9));
-      flex-shrink: 0;
-    }
-    .bar-wrapper {
-      flex: 1;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      position: relative;
-      min-width: 0;
+      gap: 5px;
     }
 
-    /* BISEL BLANCO CON ESCUDO */
-    .badge-box {
-      width: 95px;
-      height: 100%;
-      background: #ffffff;
-      transform: skewX(-22deg);
+    .table-grid {
+      display: grid;
+      grid-template-columns: 52px minmax(130px, 1fr) 99px 86px 82px;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    /* CABECERA DE TABLA */
+    .table-head {
+      min-height: 49px;
+      margin-bottom: 2px;
+    }
+
+    .table-head-cell {
       display: flex;
       align-items: center;
       justify-content: center;
+      min-width: 0;
+      padding: 5px 3px;
+      border-top: 1px solid #17a7ff;
+      border-right: 1px solid rgba(30, 169, 255, 0.65);
+      border-bottom: 1px solid #0054bf;
+      background: linear-gradient(
+        135deg,
+        rgba(15, 57, 118, 0.98),
+        rgba(3, 16, 42, 0.98)
+      );
+      color: #ffffff;
+      font-size: 10px;
+      font-style: italic;
+      font-weight: 900;
+      line-height: 1.1;
+      text-align: center;
+      text-transform: uppercase;
+      text-shadow: 0 1px 2px #000000;
+      box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.15),
+        0 0 5px rgba(0, 140, 255, 0.22);
+    }
+
+    .table-head-cell:first-child {
+      border-left: 1px solid #17a7ff;
+      clip-path: polygon(9% 0, 100% 0, 91% 100%, 0 100%);
+    }
+
+    .table-head-cell:nth-child(2) {
+      clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+    }
+
+    .table-head-cell:nth-child(3),
+    .table-head-cell:nth-child(4) {
+      clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+    }
+
+    .table-head-cell.total-head {
+      border-color: #ff4165;
+      background: linear-gradient(135deg, #e2224c, #85001d);
+      clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+    }
+
+    .race-header-name {
+      display: block;
+      margin-top: 2px;
+      font-size: 8px;
+      line-height: 1;
+    }
+
+    /* FILAS */
+    .team-row {
+      min-height: 41px;
+    }
+
+    .cell {
       position: relative;
-      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 41px;
       overflow: hidden;
-      box-shadow: -2px 0 6px rgba(0,0,0,0.4);
-      border-right: 2px solid #000;
+    }
+
+    .position-cell {
+      border-top: 1px solid #0ab0ff;
+      border-bottom: 1px solid #0054bc;
+      border-left: 1px solid #0ab0ff;
+      background: linear-gradient(135deg, #0b4baf, #031739);
+      clip-path: polygon(10% 0, 100% 0, 89% 100%, 0 100%);
+      color: #ffffff;
+      font-size: 23px;
+      font-style: italic;
+      font-weight: 900;
+      text-shadow:
+        0 2px 3px #000000,
+        0 0 4px rgba(0, 170, 255, 0.8);
+    }
+
+    .team-cell {
+      justify-content: flex-start;
+      margin-left: -5px;
+      padding: 0 12px 0 17px;
+      border-top: 1px solid #25abff;
+      border-bottom: 1px solid #0063cb;
+      background: linear-gradient(
+        135deg,
+        var(--silver-1) 0%,
+        var(--silver-2) 50%,
+        var(--silver-3) 100%
+      );
+      clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+      box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.9),
+        inset 0 -2px 3px rgba(0, 54, 108, 0.25);
+    }
+
+    .points-old-cell,
+    .race-points-cell {
+      margin-left: -5px;
+      border-top: 1px solid #0d9cf1;
+      border-bottom: 1px solid #004eaa;
+      background: linear-gradient(135deg, #071c42, #020a19);
+      clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+      color: #ffffff;
+      font-size: 19px;
+      font-style: italic;
+      font-weight: 900;
+      text-shadow: 0 2px 3px #000000;
+      box-shadow:
+        inset 0 1px 2px rgba(68, 177, 255, 0.15),
+        0 0 5px rgba(0, 130, 255, 0.16);
+    }
+
+    .total-cell {
+      margin-left: -5px;
+      border-top: 1px solid #ff6b82;
+      border-right: 1px solid #a40024;
+      border-bottom: 1px solid #790018;
+      background: linear-gradient(
+        135deg,
+        #ff3158 0%,
+        #d90034 48%,
+        #8b001f 100%
+      );
+      clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+      color: #ffffff;
+      font-size: 20px;
+      font-style: italic;
+      font-weight: 900;
+      text-shadow: 1px 2px 3px rgba(50, 0, 10, 0.85);
+      box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.28),
+        inset 0 -2px 3px rgba(30, 0, 5, 0.52),
+        0 0 6px rgba(255, 0, 55, 0.2);
+    }
+
+    /* INFORMACIÓN DEL EQUIPO */
+    .team-content {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .team-name {
+      overflow: hidden;
+      color: #071321;
+      font-size: 19px;
+      font-style: italic;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-overflow: ellipsis;
+      text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.65);
+      white-space: nowrap;
+    }
+
+    .team-logo-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 37px;
+      height: 32px;
+      margin-left: auto;
       flex-shrink: 0;
     }
-    .badge-box img {
-      transform: skewX(22deg);
-      max-height: 32px;
-      max-width: 72px;
+
+    .team-logo-box img {
+      max-width: 36px;
+      max-height: 29px;
       object-fit: contain;
     }
-    .badge-box .badge-fallback {
-      transform: skewX(22deg);
-      font-size: 11px;
-      font-weight: 900;
-      color: #0f172a;
-      text-transform: uppercase;
-      text-align: center;
-      line-height: 1.1;
-    }
 
-    /* CUERPO DE COLOR CON SIGLAS */
-    .color-box {
-      flex: 1;
-      height: 100%;
-      margin-left: -13px;
-      transform: skewX(-22deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 2;
-      box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -2px 3px rgba(0,0,0,0.5);
-      min-width: 0;
-    }
-    .team-code {
-      transform: skewX(22deg);
-      color: #ffffff;
-      font-weight: 900;
-      font-size: 20px;
-      letter-spacing: 2px;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.8);
-      white-space: nowrap;
+    .team-label-fallback {
       overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 0 4px;
-    }
-
-    /* CÁPSULA NEGRA CON PUNTOS */
-    .points-box {
-      width: 100px;
-      height: 100%;
-      background: #000000;
-      margin-left: -13px;
-      transform: skewX(-22deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 1;
-      border-left: 2px solid #111;
-      box-shadow: inset 0 2px 3px rgba(255,255,255,0.1);
-      flex-shrink: 0;
-    }
-    .points-val {
-      transform: skewX(22deg);
-      color: #ffffff;
+      max-width: 38px;
+      color: #174060;
+      font-size: 6px;
       font-weight: 900;
-      font-size: 21px;
-      font-style: italic;
-      letter-spacing: 0.5px;
+      line-height: 1.05;
+      text-align: center;
+      text-transform: uppercase;
     }
 
-    /* PANEL LATERAL DE GESTIÓN */
+    /* POLE Y VICTORIA EN EL CARTEL */
+    .awards {
+      position: absolute;
+      right: 7px;
+      bottom: 2px;
+      display: flex;
+      gap: 2px;
+      z-index: 2;
+    }
+
+    .award-badge {
+      padding: 2px 3px;
+      border-radius: 2px;
+      color: #ffffff;
+      font-size: 6px;
+      font-style: italic;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      line-height: 1;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+    }
+
+    .award-pole {
+      border: 1px solid #72d3ff;
+      background: linear-gradient(135deg, #008cff, #004ab3);
+    }
+
+    .award-win {
+      border: 1px solid #ff7d93;
+      background: linear-gradient(135deg, #ff3158, #a30027);
+    }
+
+    /* =========================
+       PANEL DE CONTROL
+    ========================= */
     .control-panel {
-      width: 420px;
-      background: #151922;
-      border-radius: 8px;
-      padding: 20px;
-      border: 1px solid #2d3748;
+      width: 455px;
       max-height: 92vh;
       overflow-y: auto;
+      padding: 20px;
+      border: 1px solid #075fff;
+      border-radius: 8px;
+      background: #071321;
+      box-shadow: 0 0 18px rgba(0, 110, 255, 0.14);
     }
+
     .control-panel h2 {
-      font-size: 18px;
-      margin-bottom: 15px;
-      color: #00d2ff;
-      border-bottom: 1px solid #2d3748;
+      margin-bottom: 14px;
       padding-bottom: 8px;
+      border-bottom: 1px solid #164979;
+      color: #35bcff;
+      font-size: 18px;
     }
+
+    .panel-subtitle {
+      margin: 15px 0 8px;
+      color: #94cfff;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
     .btn {
       width: 100%;
+      margin-bottom: 10px;
       padding: 12px;
-      font-weight: 900;
       border: none;
       border-radius: 6px;
+      color: #ffffff;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.7px;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.2s;
-      margin-bottom: 10px;
+      transition: 0.2s ease;
     }
-    .btn-sort { background: #0284c7; color: white; }
-    .btn-sort:hover { background: #0369a1; }
-    .btn-export { background: #16a34a; color: white; }
-    .btn-export:hover { background: #15803d; }
-    
+
+    .btn-sort {
+      background: linear-gradient(135deg, #006ed1, #00aaff);
+    }
+
+    .btn-sort:hover {
+      background: linear-gradient(135deg, #0054a3, #0089d8);
+    }
+
+    .btn-export {
+      background: linear-gradient(135deg, #e30038, #ff3158);
+    }
+
+    .btn-export:hover {
+      background: linear-gradient(135deg, #b9002d, #df002f);
+    }
+
+    .race-title-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #245d92;
+      border-radius: 5px;
+      outline: none;
+      background: #020710;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .race-title-control:focus {
+      border-color: #00aaff;
+      box-shadow: 0 0 8px rgba(0, 170, 255, 0.35);
+    }
+
     .bg-controls {
       display: flex;
       gap: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
+
     .btn-bg {
       flex: 1;
-      background: #475569;
-      color: white;
       padding: 10px;
-      font-size: 12px;
+      border: 1px solid #1c78c9;
       border-radius: 6px;
+      background: #12395f;
+      color: #ffffff;
       cursor: pointer;
+      font-size: 12px;
       font-weight: 800;
       text-align: center;
     }
-    .btn-bg:hover { background: #64748b; }
+
+    .btn-bg:hover {
+      background: #18568e;
+    }
+
     .btn-bg-reset {
-      background: #334155;
-      color: #cbd5e1;
       padding: 10px 14px;
-      font-size: 12px;
-      border: none;
+      border: 1px solid #28577f;
       border-radius: 6px;
+      background: #172b40;
+      color: #d8eeff;
       cursor: pointer;
+      font-size: 12px;
       font-weight: 800;
     }
-    .btn-bg-reset:hover { background: #1e293b; }
+
+    .btn-bg-reset:hover {
+      background: #0f2134;
+    }
+
+    /* FILAS DEL EDITOR */
+    .editor-legend {
+      display: grid;
+      grid-template-columns: 73px 51px 51px 1fr 42px;
+      gap: 5px;
+      margin-bottom: 5px;
+      padding: 0 5px;
+      color: #7ebfe8;
+      font-size: 8px;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+    }
 
     .team-edit-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 73px 51px 51px 1fr 42px;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-      background: #0f121a;
-      padding: 8px 10px;
+      gap: 5px;
+      margin-bottom: 7px;
+      padding: 7px 6px;
+      border: 1px solid #12375d;
       border-radius: 6px;
-      border: 1px solid #1e293b;
+      background: #050d18;
     }
+
     .team-info {
       display: flex;
       align-items: center;
-      gap: 8px;
-      width: 110px;
+      gap: 6px;
+      min-width: 0;
     }
-    .team-color-indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-    }
-    .team-info span {
-      font-weight: 800;
-      font-size: 14px;
-    }
-    .team-edit-row input[type="number"] {
-      width: 75px;
-      background: #06080d;
-      border: 1px solid #334155;
-      color: #fff;
-      padding: 6px;
-      border-radius: 4px;
-      font-weight: 800;
-      text-align: center;
-      font-size: 15px;
-    }
-    .file-btn {
-      background: #334155;
-      color: #e2e8f0;
-      font-size: 11px;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 700;
-      display: inline-block;
-      text-align: center;
-    }
-    .file-btn:hover { background: #475569; }
-    .file-input { display: none; }
 
-    /* REGLAS ESPECÍFICAS PARA MÓVIL */
+    .team-color-indicator {
+      width: 10px;
+      height: 10px;
+      flex-shrink: 0;
+      border: 1px solid #2c9cf0;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #ffffff, #78bdf2);
+    }
+
+    .team-info span {
+      overflow: hidden;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .points-input {
+      width: 100%;
+      padding: 6px 2px;
+      border: 1px solid #245d92;
+      border-radius: 4px;
+      outline: none;
+      background: #020710;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .points-input:focus {
+      border-color: #00aaff;
+      box-shadow: 0 0 8px rgba(0, 170, 255, 0.4);
+    }
+
+    .award-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .award-toggle {
+      width: 43px;
+      height: 29px;
+      padding: 0 2px;
+      border: 1px solid #2b608f;
+      border-radius: 4px;
+      background: #0a1c2d;
+      color: #c5e7ff;
+      cursor: pointer;
+      font-size: 7px;
+      font-style: italic;
+      font-weight: 900;
+      transition: 0.2s ease;
+    }
+
+    .award-toggle:hover {
+      background: #12395f;
+      transform: translateY(-1px);
+    }
+
+    .award-toggle.pole-active {
+      border-color: #76d6ff;
+      background: linear-gradient(135deg, #008cff, #004ab3);
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(0, 153, 255, 0.5);
+    }
+
+    .award-toggle.win-active {
+      border-color: #ff8198;
+      background: linear-gradient(135deg, #ff3158, #a30027);
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(255, 30, 75, 0.45);
+    }
+
+    .file-btn {
+      display: inline-block;
+      padding: 7px 2px;
+      border: 1px solid #236dac;
+      border-radius: 4px;
+      background: #173e64;
+      color: #e2f4ff;
+      cursor: pointer;
+      font-size: 8px;
+      font-weight: 800;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .file-btn:hover {
+      background: #205789;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
     @media (max-width: 950px) {
       body {
         flex-direction: column;
         align-items: center;
-        padding: 12px 8px;
         gap: 12px;
+        padding: 12px 8px;
       }
+
       .mobile-nav {
         display: flex;
       }
+
       .control-panel {
         width: 100%;
         max-width: 540px;
         max-height: none;
       }
-      /* Ajuste proporcional para pantallas pequeñas */
-      .header-title { font-size: 21px; }
-      .gtd-badge, .gt3-badge { font-size: 34px; }
-      .pos-num { width: 32px; font-size: 19px; }
-      .badge-box { width: 70px; }
-      .badge-box img { max-width: 50px; max-height: 24px; }
-      .team-code { font-size: 16px; }
-      .points-box { width: 75px; }
-      .points-val { font-size: 17px; }
+    }
+
+    @media (max-width: 540px) {
+      #poster {
+        padding: 18px 7px 22px;
+      }
+
+      .header-title {
+        font-size: 20px;
+        letter-spacing: 1.5px;
+      }
+
+      .gtd-badge,
+      .gt3-badge {
+        font-size: 33px;
+      }
+
+      .table-grid {
+        grid-template-columns: 42px minmax(105px, 1fr) 82px 69px 68px;
+      }
+
+      .table-head {
+        min-height: 43px;
+      }
+
+      .table-head-cell {
+        font-size: 8px;
+      }
+
+      .race-header-name {
+        font-size: 7px;
+      }
+
+      .team-row,
+      .cell {
+        min-height: 36px;
+      }
+
+      .position-cell {
+        font-size: 19px;
+      }
+
+      .team-name {
+        font-size: 15px;
+      }
+
+      .points-old-cell,
+      .race-points-cell {
+        font-size: 16px;
+      }
+
+      .total-cell {
+        font-size: 17px;
+      }
+
+      .team-logo-box {
+        width: 30px;
+        height: 28px;
+      }
+
+      .team-logo-box img {
+        max-width: 29px;
+        max-height: 25px;
+      }
+
+      .team-label-fallback {
+        max-width: 30px;
+        font-size: 5px;
+      }
+
+      .award-badge {
+        padding: 1px 2px;
+        font-size: 5px;
+      }
+
+      .control-panel {
+        padding: 15px 10px;
+      }
+
+      .team-edit-row,
+      .editor-legend {
+        grid-template-columns: 64px 47px 47px 1fr 39px;
+        gap: 4px;
+      }
+
+      .award-toggle {
+        width: 38px;
+        font-size: 6px;
+      }
+
+      .team-info span {
+        font-size: 11px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- PESTAÑAS MÓVIL -->
+  <!-- PESTAÑAS PARA MÓVIL -->
   <div class="mobile-nav">
-    <button class="mobile-tab-btn active" id="tabCartel" onclick="switchTab('poster')">🏆 Ver Cartel</button>
-    <button class="mobile-tab-btn" id="tabPanel" onclick="switchTab('panel')">⚙️ Editar Puntos</button>
+    <button class="mobile-tab-btn active" id="tabCartel" onclick="switchTab('poster')">
+      🏆 Ver cartel
+    </button>
+
+    <button class="mobile-tab-btn" id="tabPanel" onclick="switchTab('panel')">
+      ⚙️ Editar
+    </button>
   </div>
 
-  <!-- CARTEL DE LA CLASIFICACIÓN -->
+  <!-- CARTEL -->
   <div id="poster">
     <div class="header">
       <div class="header-title">CLASIFICACIÓN GENERAL</div>
+
       <div class="header-logos">
         <div class="gtd-badge">GTD</div>
         <div class="gt3-badge">GT3<span>2026</span></div>
       </div>
-      <div class="dots-divider">
-        <span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span><span></span>
-      </div>
+
+      <div class="race-line"></div>
     </div>
 
-    <!-- LISTA DE FILAS -->
-    <div class="table-container" id="teamsList"></div>
+    <div class="classification-table">
+      <div class="table-grid table-head">
+        <div class="table-head-cell">Pos.</div>
+
+        <div class="table-head-cell">
+          Escudería / Equipo
+        </div>
+
+        <div class="table-head-cell">
+          <span id="previousHeaderName">
+            PUNTOS ANTERIORES<br>
+            <span class="race-header-name">(R1 - R4)</span>
+          </span>
+        </div>
+
+        <div class="table-head-cell">
+          <span id="raceHeaderName">
+            R5<br>
+            <span class="race-header-name">(DRAGON TRAIL)</span>
+          </span>
+        </div>
+
+        <div class="table-head-cell total-head">
+          Total
+        </div>
+      </div>
+
+      <div id="teamsList"></div>
+    </div>
   </div>
 
-  <!-- PANEL DE CONTROL LATERAL -->
+  <!-- PANEL DE CONTROL -->
   <div class="control-panel" id="controlPanel">
     <h2>Gestión de Clasificación</h2>
-    <button class="btn btn-sort" onclick="sortAndRender()">⚡ 1. Reordenar por Puntos</button>
-    <button class="btn btn-export" onclick="downloadImage()">💾 2. Descargar Imagen PNG</button>
-    
-    <!-- CONTROL DE IMAGEN DE FONDO -->
-    <div style="margin: 15px 0;">
-      <h3 style="font-size: 13px; margin-bottom: 8px; color: #94a3b8; text-transform: uppercase;">Fondo del Cartel:</h3>
-      <div class="bg-controls">
-        <label class="btn-bg">
-          🖼️ Subir Foto de Fondo
-          <input type="file" class="file-input" accept="image/*" onchange="uploadBackground(this)">
-        </label>
-        <button class="btn-bg-reset" onclick="resetBackground()" title="Volver al fondo por defecto">Restaurar</button>
-      </div>
+
+    <button class="btn btn-sort" onclick="sortAndRender()">
+      ⚡ Reordenar por total
+    </button>
+
+    <button class="btn btn-export" onclick="downloadImage()">
+      💾 Descargar imagen PNG
+    </button>
+
+    <div class="panel-subtitle">Título de puntos anteriores</div>
+
+    <input
+      id="previousTitleInput"
+      class="race-title-control"
+      type="text"
+      maxlength="32"
+      value="PUNTOS ANTERIORES (R1 - R4)"
+      placeholder="Ejemplo: PUNTOS ANTERIORES (R1 - R5)"
+      oninput="updatePreviousTitle(this.value)"
+      onchange="updatePreviousTitle(this.value)"
+    >
+
+    <div class="panel-subtitle">Título de la carrera</div>
+
+    <input
+      id="raceTitleInput"
+      class="race-title-control"
+      type="text"
+      maxlength="28"
+      value="R5 (DRAGON TRAIL)"
+      placeholder="Ejemplo: R5 (DRAGON TRAIL)"
+      oninput="updateRaceTitle(this.value)"
+      onchange="updateRaceTitle(this.value)"
+    >
+
+    <div class="panel-subtitle">Fondo del cartel</div>
+
+    <div class="bg-controls">
+      <label class="btn-bg">
+        🖼️ Subir fondo
+        <input
+          type="file"
+          class="file-input"
+          accept="image/*"
+          onchange="uploadBackground(this)"
+        >
+      </label>
+
+      <button class="btn-bg-reset" onclick="resetBackground()">
+        Restaurar
+      </button>
     </div>
 
-    <div>
-      <h3 style="font-size: 13px; margin-bottom: 10px; color: #94a3b8; text-transform: uppercase;">Equipos, Puntos y Escudos:</h3>
-      <div id="editorInputs"></div>
+    <div class="panel-subtitle">
+      Equipo · Anteriores · Carrera · Pole/Vict. · Logo
     </div>
+
+    <div class="editor-legend">
+      <span>Equipo</span>
+      <span>Ant.</span>
+      <span>Carrera</span>
+      <span>Pole / Vict.</span>
+      <span>Logo</span>
+    </div>
+
+    <div id="editorInputs"></div>
   </div>
 
   <script>
+    const defaultBackground = `
+      radial-gradient(
+        circle at 50% 8%,
+        rgba(0, 120, 255, 0.34) 0%,
+        rgba(3, 12, 29, 0.90) 41%,
+        rgba(1, 3, 9, 0.98) 100%
+      )
+    `;
+
+    let previousTitle = "PUNTOS ANTERIORES (R1 - R4)";
+    let raceTitle = "R5 (DRAGON TRAIL)";
+
     let teamsData = [
-      { id: "mr", name: "MR", label: "MANIACS", color: "#1e1e1e", pts: 230, logo: "" },
-      { id: "tls", name: "TLS", label: "THUNDER", color: "#0d2b59", pts: 228, logo: "" },
-      { id: "ava", name: "AVA", label: "AVALON", color: "#e65100", pts: 199, logo: "" },
-      { id: "wrt", name: "WRT", label: "WRT", color: "#005a70", pts: 183, logo: "" },
-      { id: "tsr", name: "TSR", label: "TOP SECRET", color: "#19538c", pts: 183, logo: "" },
-      { id: "krt", name: "KRT", label: "KRONOS", color: "#007a33", pts: 176, logo: "" },
-      { id: "fvrt", name: "FVRT", label: "FANATIC", color: "#6b008b", pts: 175, logo: "" },
-      { id: "dkr", name: "DKR", label: "DARK KNIGHT", color: "#003b75", pts: 166, logo: "" },
-      { id: "wms", name: "WMS", label: "W MOTORSPORT", color: "#c62828", pts: 166, logo: "" },
-      { id: "kaishin", name: "KAISHIN", label: "KAISHIN", color: "#c2185b", pts: 158, logo: "" },
-      { id: "shk", name: "SHK", label: "SHK", color: "#9e7d0a", pts: 157, logo: "" },
-      { id: "rln", name: "RLN", label: "REDLINE", color: "#0097a7", pts: 155, logo: "" },
-      { id: "gr8", name: "GR8", label: "GR8", color: "#b25828", pts: 68, logo: "" },
-      { id: "mmt", name: "MMT", label: "MONARCHY", color: "#0b2052", pts: 38, logo: "" }
+      { id: "mr",      name: "MR",       label: "MANIACS",      previousPts: 230, racePts: 40, logo: "", pole: false, win: false },
+      { id: "tls",     name: "TLS",      label: "THUNDER",      previousPts: 228, racePts: 35, logo: "", pole: false, win: false },
+      { id: "ava",     name: "AVA",      label: "AVALON",       previousPts: 199, racePts: 37, logo: "", pole: false, win: false },
+      { id: "wrt",     name: "WRT",      label: "WRT",          previousPts: 183, racePts: 32, logo: "", pole: false, win: false },
+      { id: "tsr",     name: "TSR P/VR", label: "TOP SECRET",   previousPts: 183, racePts: 29, logo: "", pole: false, win: false },
+      { id: "krt",     name: "KRT",      label: "KRONOS",       previousPts: 176, racePts: 25, logo: "", pole: false, win: false },
+      { id: "fvrt",    name: "FVRT",     label: "FANATIC",      previousPts: 175, racePts: 24, logo: "", pole: false, win: false },
+      { id: "dkr",     name: "DKR",      label: "DARK KNIGHT",  previousPts: 166, racePts: 33, logo: "", pole: false, win: false },
+      { id: "wms",     name: "WMS",      label: "W MOTORSPORT", previousPts: 166, racePts: 29, logo: "", pole: false, win: false },
+      { id: "kaishin", name: "KSM",      label: "KAISHIN",      previousPts: 158, racePts: 31, logo: "", pole: false, win: false },
+      { id: "rln",     name: "RLN",      label: "REDLINE",      previousPts: 155, racePts: 28, logo: "", pole: false, win: false },
+      { id: "shk",     name: "SHK",      label: "SHK",          previousPts: 157, racePts: 22, logo: "", pole: false, win: false },
+      { id: "gr8",     name: "GR8",      label: "GR8",          previousPts: 68,  racePts: 0,  logo: "", pole: false, win: false },
+      { id: "mmt",     name: "MMT",      label: "MONARCHY",     previousPts: 38,  racePts: 0,  logo: "", pole: false, win: false }
     ];
 
-    // Cargar logos guardados
-    const savedLogos = localStorage.getItem('gt_team_logos');
-    if (savedLogos) {
-      try {
-        const parsed = JSON.parse(savedLogos);
-        teamsData.forEach(t => { if (parsed[t.id]) t.logo = parsed[t.id]; });
-      } catch(e) {}
+    function getTotal(team) {
+      return Number(team.previousPts || 0) + Number(team.racePts || 0);
     }
 
-    // Cargar fondo guardado
-    const savedBg = localStorage.getItem('gt_custom_bg');
-    if (savedBg) {
-      document.getElementById('poster').style.backgroundImage = `url('${savedBg}')`;
+    /* =========================
+       CARGAR DATOS GUARDADOS
+    ========================= */
+    function loadSavedData() {
+      const savedClassification = localStorage.getItem("gt_classification_data_v3");
+      const savedLogos = localStorage.getItem("gt_team_logos");
+      const savedAwards = localStorage.getItem("gt_team_awards");
+      const savedRaceTitle = localStorage.getItem("gt_race_title");
+      const savedPreviousTitle = localStorage.getItem("gt_previous_title");
+      const savedBackground = localStorage.getItem("gt_custom_bg");
+
+      if (savedClassification) {
+        try {
+          const savedTeams = JSON.parse(savedClassification);
+
+          if (Array.isArray(savedTeams)) {
+            const orderedTeams = [];
+
+            savedTeams.forEach(savedTeam => {
+              const originalTeam = teamsData.find(team => team.id === savedTeam.id);
+
+              if (originalTeam) {
+                originalTeam.previousPts = Math.max(
+                  0,
+                  Number(savedTeam.previousPts) || 0
+                );
+
+                originalTeam.racePts = Math.max(
+                  0,
+                  Number(savedTeam.racePts) || 0
+                );
+
+                orderedTeams.push(originalTeam);
+              }
+            });
+
+            teamsData.forEach(team => {
+              if (!orderedTeams.includes(team)) {
+                orderedTeams.push(team);
+              }
+            });
+
+            teamsData = orderedTeams;
+          }
+        } catch (error) {
+          console.warn("No se pudieron recuperar los puntos guardados.");
+        }
+      }
+
+      if (savedLogos) {
+        try {
+          const logos = JSON.parse(savedLogos);
+
+          teamsData.forEach(team => {
+            if (logos[team.id]) {
+              team.logo = logos[team.id];
+            }
+          });
+        } catch (error) {
+          console.warn("No se pudieron recuperar los logos.");
+        }
+      }
+
+      if (savedAwards) {
+        try {
+          const awards = JSON.parse(savedAwards);
+
+          teamsData.forEach(team => {
+            team.pole = awards.pole === team.id;
+            team.win = awards.win === team.id;
+          });
+        } catch (error) {
+          console.warn("No se pudieron recuperar Pole y Victoria.");
+        }
+      }
+
+      if (savedPreviousTitle) {
+        previousTitle = savedPreviousTitle;
+      }
+
+      if (savedRaceTitle) {
+        raceTitle = savedRaceTitle;
+      }
+
+      if (savedBackground) {
+        document.getElementById("poster").style.backgroundImage = `url('${savedBackground}')`;
+      }
     }
 
+    /* =========================
+       GUARDAR DATOS
+    ========================= */
+    function saveClassification() {
+      const dataToSave = teamsData.map(team => ({
+        id: team.id,
+        previousPts: team.previousPts,
+        racePts: team.racePts
+      }));
+
+      localStorage.setItem(
+        "gt_classification_data_v3",
+        JSON.stringify(dataToSave)
+      );
+    }
+
+    function saveAwards() {
+      const poleTeam = teamsData.find(team => team.pole);
+      const winTeam = teamsData.find(team => team.win);
+
+      localStorage.setItem(
+        "gt_team_awards",
+        JSON.stringify({
+          pole: poleTeam ? poleTeam.id : "",
+          win: winTeam ? winTeam.id : ""
+        })
+      );
+    }
+
+    function saveLogos() {
+      const logosMap = {};
+
+      teamsData.forEach(team => {
+        if (team.logo) {
+          logosMap[team.id] = team.logo;
+        }
+      });
+
+      localStorage.setItem("gt_team_logos", JSON.stringify(logosMap));
+    }
+
+    /* =========================
+       TÍTULOS DE COLUMNAS
+    ========================= */
+    function formatPreviousTitle(title) {
+      const cleanTitle = title.trim() || "PUNTOS ANTERIORES (R1 - R4)";
+
+      const match = cleanTitle.match(/^(PUNTOS ANTERIORES)\s*(.*)$/i);
+
+      if (match) {
+        const firstLine = match[1].toUpperCase();
+        const secondLine = match[2].trim();
+
+        if (secondLine) {
+          return `
+            ${firstLine}<br>
+            <span class="race-header-name">${secondLine}</span>
+          `;
+        }
+
+        return firstLine;
+      }
+
+      const firstSpace = cleanTitle.indexOf(" ");
+
+      if (firstSpace > -1) {
+        return `
+          ${cleanTitle.slice(0, firstSpace)}<br>
+          <span class="race-header-name">
+            ${cleanTitle.slice(firstSpace + 1)}
+          </span>
+        `;
+      }
+
+      return cleanTitle;
+    }
+
+    function formatRaceTitle(title) {
+      const cleanTitle = title.trim() || "R5 (DRAGON TRAIL)";
+
+      if (cleanTitle.includes(" ")) {
+        const firstSpace = cleanTitle.indexOf(" ");
+
+        return `
+          ${cleanTitle.slice(0, firstSpace)}<br>
+          <span class="race-header-name">
+            ${cleanTitle.slice(firstSpace + 1)}
+          </span>
+        `;
+      }
+
+      return cleanTitle;
+    }
+
+    function updatePreviousTitle(value) {
+      previousTitle = value.trim() || "PUNTOS ANTERIORES (R1 - R4)";
+
+      document.getElementById("previousHeaderName").innerHTML =
+        formatPreviousTitle(previousTitle);
+
+      localStorage.setItem("gt_previous_title", previousTitle);
+    }
+
+    function updateRaceTitle(value) {
+      raceTitle = value.trim() || "R5 (DRAGON TRAIL)";
+
+      document.getElementById("raceHeaderName").innerHTML =
+        formatRaceTitle(raceTitle);
+
+      localStorage.setItem("gt_race_title", raceTitle);
+    }
+
+    /* =========================
+       RENDERIZAR CARTEL
+    ========================= */
     function renderTable() {
       const list = document.getElementById("teamsList");
       list.innerHTML = "";
 
       teamsData.forEach((team, index) => {
         const row = document.createElement("div");
-        row.className = "team-row";
-        
-        const badgeContent = team.logo 
-          ? `<img src="${team.logo}" alt="${team.name}">` 
-          : `<span class="badge-fallback">${team.label}</span>`;
+        row.className = "table-grid team-row";
 
-        row.innerHTML = `
-          <div class="pos-num">${index + 1}</div>
-          <div class="bar-wrapper">
-            <div class="badge-box">
-              ${badgeContent}
-            </div>
-            <div class="color-box" style="background: ${team.color};">
-              <span class="team-code">${team.name}</span>
-            </div>
-            <div class="points-box">
-              <span class="points-val">${team.pts}</span>
-            </div>
+        const logoContent = team.logo
+          ? `<img src="${team.logo}" alt="${team.name}">`
+          : `<span class="team-label-fallback">${team.label}</span>`;
+
+        const awardsContent = `
+          <div class="awards">
+            ${team.pole ? '<span class="award-badge award-pole">POLE</span>' : ""}
+            ${team.win ? '<span class="award-badge award-win">VICT.</span>' : ""}
           </div>
         `;
+
+        row.innerHTML = `
+          <div class="cell position-cell">${index + 1}</div>
+
+          <div class="cell team-cell">
+            <div class="team-content">
+              <span class="team-name">${team.name}</span>
+
+              <div class="team-logo-box">
+                ${logoContent}
+              </div>
+            </div>
+
+            ${awardsContent}
+          </div>
+
+          <div class="cell points-old-cell">
+            ${team.previousPts}
+          </div>
+
+          <div class="cell race-points-cell">
+            ${team.racePts}
+          </div>
+
+          <div class="cell total-cell">
+            ${getTotal(team)}
+          </div>
+        `;
+
         list.appendChild(row);
       });
     }
 
+    /* =========================
+       RENDERIZAR PANEL
+    ========================= */
     function renderEditor() {
       const editor = document.getElementById("editorInputs");
       editor.innerHTML = "";
 
-      teamsData.forEach((team) => {
+      teamsData.forEach(team => {
         const row = document.createElement("div");
         row.className = "team-edit-row";
+
         row.innerHTML = `
           <div class="team-info">
-            <div class="team-color-indicator" style="background:${team.color}"></div>
+            <div class="team-color-indicator"></div>
             <span>${team.name}</span>
           </div>
-          <input type="number" inputmode="numeric" value="${team.pts}" onchange="updatePoints('${team.id}', this.value)">
-          <label class="file-btn">
-            ${team.logo ? '✓ Escudo' : 'Subir logo'}
-            <input type="file" class="file-input" accept="image/*" onchange="uploadLogo('${team.id}', this)">
+
+          <input
+            class="points-input"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            value="${team.previousPts}"
+            title="Puntos anteriores de ${team.name}"
+            onchange="updateTeamPoints('${team.id}', 'previousPts', this.value)"
+          >
+
+          <input
+            class="points-input"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            value="${team.racePts}"
+            title="Puntos de carrera de ${team.name}"
+            onchange="updateTeamPoints('${team.id}', 'racePts', this.value)"
+          >
+
+          <div class="award-controls">
+            <button
+              type="button"
+              class="award-toggle ${team.pole ? "pole-active" : ""}"
+              onclick="togglePole('${team.id}')"
+              title="Asignar o quitar Pole Position"
+            >
+              POLE
+            </button>
+
+            <button
+              type="button"
+              class="award-toggle ${team.win ? "win-active" : ""}"
+              onclick="toggleWin('${team.id}')"
+              title="Asignar o quitar Victoria"
+            >
+              VICT.
+            </button>
+          </div>
+
+          <label class="file-btn" title="Subir o sustituir logo">
+            ${team.logo ? "✓" : "Logo"}
+            <input
+              type="file"
+              class="file-input"
+              accept="image/*"
+              onchange="uploadLogo('${team.id}', this)"
+            >
           </label>
         `;
+
         editor.appendChild(row);
       });
     }
 
-    function updatePoints(id, value) {
-      const team = teamsData.find(t => t.id === id);
-      if (team) {
-        team.pts = parseInt(value) || 0;
-        renderTable();
-      }
-    }
+    /* =========================
+       ACTUALIZAR PUNTOS
+    ========================= */
+    function updateTeamPoints(id, field, value) {
+      const team = teamsData.find(team => team.id === id);
 
-    function uploadLogo(id, input) {
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const team = teamsData.find(t => t.id === id);
-          if (team) {
-            team.logo = e.target.result;
-            const logosMap = {};
-            teamsData.forEach(t => { if(t.logo) logosMap[t.id] = t.logo; });
-            localStorage.setItem('gt_team_logos', JSON.stringify(logosMap));
+      if (!team) return;
 
-            renderTable();
-            renderEditor();
-          }
-        };
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
+      team[field] = Math.max(0, parseInt(value, 10) || 0);
 
-    function uploadBackground(input) {
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const bgData = e.target.result;
-          document.getElementById('poster').style.backgroundImage = `url('${bgData}')`;
-          localStorage.setItem('gt_custom_bg', bgData);
-        };
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
-
-    function resetBackground() {
-      document.getElementById('poster').style.backgroundImage = "radial-gradient(circle at 50% 15%, rgba(13, 30, 56, 0.85) 0%, rgba(5, 8, 17, 0.92) 50%, rgba(2, 3, 6, 0.97) 100%)";
-      localStorage.removeItem('gt_custom_bg');
+      saveClassification();
+      renderTable();
     }
 
     function sortAndRender() {
-      teamsData.sort((a, b) => b.pts - a.pts);
+      teamsData.sort((a, b) => {
+        const totalDifference = getTotal(b) - getTotal(a);
+
+        if (totalDifference !== 0) {
+          return totalDifference;
+        }
+
+        return b.racePts - a.racePts;
+      });
+
+      saveClassification();
       renderTable();
       renderEditor();
     }
 
+    /* =========================
+       POLE Y VICTORIA
+    ========================= */
+    function togglePole(id) {
+      const selectedTeam = teamsData.find(team => team.id === id);
+
+      if (!selectedTeam) return;
+
+      const wasActive = selectedTeam.pole;
+
+      teamsData.forEach(team => {
+        team.pole = false;
+      });
+
+      selectedTeam.pole = !wasActive;
+
+      saveAwards();
+      renderTable();
+      renderEditor();
+    }
+
+    function toggleWin(id) {
+      const selectedTeam = teamsData.find(team => team.id === id);
+
+      if (!selectedTeam) return;
+
+      const wasActive = selectedTeam.win;
+
+      teamsData.forEach(team => {
+        team.win = false;
+      });
+
+      selectedTeam.win = !wasActive;
+
+      saveAwards();
+      renderTable();
+      renderEditor();
+    }
+
+    /* =========================
+       SUBIR ESCUDOS
+    ========================= */
+    function uploadLogo(id, input) {
+      if (!input.files || !input.files[0]) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+        const team = teamsData.find(team => team.id === id);
+
+        if (!team) return;
+
+        team.logo = event.target.result;
+
+        try {
+          saveLogos();
+        } catch (error) {
+          alert("No se pudo guardar el logo. Usa una imagen de menor tamaño.");
+        }
+
+        renderTable();
+        renderEditor();
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    /* =========================
+       FONDO
+    ========================= */
+    function uploadBackground(input) {
+      if (!input.files || !input.files[0]) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+        const bgData = event.target.result;
+
+        document.getElementById("poster").style.backgroundImage = `url('${bgData}')`;
+
+        try {
+          localStorage.setItem("gt_custom_bg", bgData);
+        } catch (error) {
+          alert("No se pudo guardar el fondo. Usa una imagen de menor tamaño.");
+        }
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function resetBackground() {
+      document.getElementById("poster").style.backgroundImage = defaultBackground;
+      localStorage.removeItem("gt_custom_bg");
+    }
+
+    /* =========================
+       EXPORTAR PNG
+    ========================= */
+    function getLocalDateForFile() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+
     function downloadImage() {
       const poster = document.getElementById("poster");
+
       html2canvas(poster, {
         scale: 2,
         useCORS: true,
         backgroundColor: null
       }).then(canvas => {
         const link = document.createElement("a");
-        link.download = `Clasificacion_GT_${new Date().toISOString().slice(0,10)}.png`;
+
+        link.download = `Clasificacion_GT_${getLocalDateForFile()}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
       });
     }
 
-    // GESTIÓN DE PESTAÑAS EN MÓVIL
+    /* =========================
+       PESTAÑAS EN MÓVIL
+    ========================= */
     function switchTab(view) {
-      const poster = document.getElementById('poster');
-      const panel = document.getElementById('controlPanel');
-      const tabCartel = document.getElementById('tabCartel');
-      const tabPanel = document.getElementById('tabPanel');
+      const poster = document.getElementById("poster");
+      const panel = document.getElementById("controlPanel");
+      const tabCartel = document.getElementById("tabCartel");
+      const tabPanel = document.getElementById("tabPanel");
 
-      if (window.innerWidth <= 950) {
-        if (view === 'poster') {
-          poster.style.display = 'block';
-          panel.style.display = 'none';
-          tabCartel.classList.add('active');
-          tabPanel.classList.remove('active');
-        } else {
-          poster.style.display = 'none';
-          panel.style.display = 'block';
-          tabPanel.classList.add('active');
-          tabCartel.classList.remove('active');
-        }
+      if (window.innerWidth > 950) return;
+
+      if (view === "poster") {
+        poster.style.display = "block";
+        panel.style.display = "none";
+
+        tabCartel.classList.add("active");
+        tabPanel.classList.remove("active");
+      } else {
+        poster.style.display = "none";
+        panel.style.display = "block";
+
+        tabPanel.classList.add("active");
+        tabCartel.classList.remove("active");
       }
     }
 
-    // Control inicial al redimensionar
-    window.addEventListener('resize', () => {
-      const poster = document.getElementById('poster');
-      const panel = document.getElementById('controlPanel');
+    window.addEventListener("resize", () => {
+      const poster = document.getElementById("poster");
+      const panel = document.getElementById("controlPanel");
+
       if (window.innerWidth > 950) {
-        poster.style.display = 'block';
-        panel.style.display = 'block';
-      } else {
-        switchTab('poster');
+        poster.style.display = "block";
+        panel.style.display = "block";
       }
     });
 
-    // Inicializar
+    /* =========================
+       INICIALIZAR
+    ========================= */
+    loadSavedData();
+
+    document.getElementById("previousTitleInput").value = previousTitle;
+    document.getElementById("previousHeaderName").innerHTML =
+      formatPreviousTitle(previousTitle);
+
+    document.getElementById("raceTitleInput").value = raceTitle;
+    document.getElementById("raceHeaderName").innerHTML =
+      formatRaceTitle(raceTitle);
+
     renderTable();
     renderEditor();
+
     if (window.innerWidth <= 950) {
-      switchTab('poster');
+      switchTab("poster");
     }
   </script>
+
 </body>
 </html>
+```
